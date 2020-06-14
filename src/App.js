@@ -14,12 +14,9 @@ import MenuItem from '@material-ui/core/MenuItem';
 
 import List from '@material-ui/core/List';
 import ListItem from '@material-ui/core/ListItem';
-import ListItemIcon from '@material-ui/core/ListItemIcon';
-import ListItemText from '@material-ui/core/ListItemText';
 
 import Grid from '@material-ui/core/Grid';
-
-import saveConfig from './components/saveConfig';
+import SaveConfig from './components/saveConfig'
 
 SyntaxHighlighter.registerLanguage('json', json);
 
@@ -28,9 +25,12 @@ const mainStyle = {
         margin: '40px',
     },
     modules: {
-        margin: '70px',
-        background: '#eeeeee'
+        marginLeft: '70px',
     },
+    innerModule: {
+        marginTop: '40px',
+        background: '#eeeeee'
+    }
 };
 
 
@@ -39,7 +39,7 @@ const buttonStyle = {
     margin: '10px'
 }
 
-function RemoteJSONViewer(){
+function RemoteJSONViewer(count){
     const [state, setState] = useState({
         url: '',
         headers: '',
@@ -52,16 +52,13 @@ function RemoteJSONViewer(){
 
 
     return (
-        <div>
-            <h3> # title</h3>
+        <div style={mainStyle.innerModule}>
+            <h3> # Use this: https://api.carbonintensity.org.uk/intensity</h3>
             <Grid container spacing={3}>
-                <form onSubmit={e => e.preventDefault() || fetch(state.url, {
-                    method: state.method,
-                    headers: state.headers,
-                    body: JSON.stringify(state.body)
-                })
+                <form onSubmit={e => e.preventDefault() || fetch(state.url)
                     .then(response => response.json())
                     .then(json => setState({ ...state, json, error: null }))
+                    .then(console.log(this.state))
                     .catch(error => setState({ ...state, error, json: null }))
                 }>
                     <Grid item xs={12}>
@@ -103,7 +100,6 @@ function RemoteJSONViewer(){
 
                         </Select>
                         <Button style={buttonStyle} type="submit" variant="outlined" color="secondary">Make Request</Button>
-
                     </Grid>
                     <br/>
                     {state.json && <SyntaxHighlighter language="json" style={monokai} >{JSON.stringify(state.json, null, '  ')}</SyntaxHighlighter>}
@@ -118,6 +114,12 @@ function RemoteJSONViewer(){
         </div>
     )
 }
+
+// , {
+//     method: state.method,
+//         headers: state.headers,
+//         body: JSON.stringify(state.body)
+// }
 /*
  Textarea-based parts:
 
@@ -135,7 +137,6 @@ function RemoteJSONViewer(){
  }
  */
 
-
 function App() {
     const [count, setCount] = useState(1);
     return (
@@ -149,6 +150,7 @@ function App() {
                         <div style={mainStyle.header}>
                             <Button style={buttonStyle} onClick={() => setCount(Math.max(count - 1, 0))} variant="outlined" color="primary">Remove Last API</Button>
                             <Button style={buttonStyle} onClick={() => setCount(count + 1)} variant="outlined" color="secondary">Add New API</Button>
+                            <SaveConfig/>
                         </div>
                     </Grid>
                     <Grid item xs={12}>
