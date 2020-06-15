@@ -17,6 +17,8 @@ import ListItem from '@material-ui/core/ListItem';
 
 import Grid from '@material-ui/core/Grid';
 import SaveConfig from './components/saveConfig'
+import { ValidateUrl } from './helpers';
+
 
 SyntaxHighlighter.registerLanguage('json', json);
 
@@ -30,6 +32,12 @@ const mainStyle = {
     innerModule: {
         marginTop: '40px',
         background: '#eeeeee'
+    },
+    form: {
+        width: '100%'
+    },
+    formList: {
+        width: '500px'
     }
 };
 
@@ -39,106 +47,110 @@ const buttonStyle = {
     margin: '10px'
 }
 
-function RemoteJSONViewer(count){
-    const [state, setState] = useState({
-        url: '',
-        headers: '',
-        body: '',
-        name: '',
-        method: '',
-        json: null,
-        error: null
-    });
-
-
-    return (
-        <div style={mainStyle.innerModule}>
-            <h3> # Use this: https://api.carbonintensity.org.uk/intensity</h3>
-            <Grid container spacing={3}>
-                <form onSubmit={e => e.preventDefault() || fetch(state.url)
-                    .then(response => response.json())
-                    .then(json => setState({ ...state, json, error: null }))
-                    .then(console.log(this.state))
-                    .catch(error => setState({ ...state, error, json: null }))
-                }>
-                    <Grid item xs={12}>
-                        <List component="nav">
-                            <ListItem>
-                                <label>Name
-                                    <Input type="text" value={state.name} onChange={event => setState({ ...state, name: event.target.value })} />
-                                </label>
-                            </ListItem>
-                            <ListItem>
-                                <label>URL
-                                    <Input type="text" value={state.url} onChange={event => setState({ ...state, url: event.target.value })} />
-                                </label>
-                            </ListItem>
-                            <ListItem>
-                                <label>Headers
-                                    <Input type="text" value={state.headers} onChange={event => setState({ ...state, headers: event.target.value })} />
-                                </label>
-                            </ListItem>
-                            <ListItem>
-                                <label>Body
-                                    <Input type="text" value={state.body} onChange={event => setState({ ...state, body: event.target.value })} />
-                                </label>
-                            </ListItem>
-                        </List>
-                    </Grid>
-                    <Grid item xs={6}>
-                        <InputLabel id="call-type-select-label">Request Type</InputLabel>
-                        <Select
-                            labelId="call-type-label"
-                            id="call-type-select"
-                            value="GET"
-                            // onChange={handleChange}
-                        >
-                            <MenuItem value="GET">GET</MenuItem>
-                            <MenuItem value="POST">POST</MenuItem>
-                            <MenuItem value="PUT">PUT</MenuItem>
-                            <MenuItem value="DELETE">DELETE</MenuItem>
-
-                        </Select>
-                        <Button style={buttonStyle} type="submit" variant="outlined" color="secondary">Make Request</Button>
-                    </Grid>
-                    <br/>
-                    {state.json && <SyntaxHighlighter language="json" style={monokai} >{JSON.stringify(state.json, null, '  ')}</SyntaxHighlighter>}
-                    {state.error && <pre>{state.error.toString()}</pre>}
-                </form>
-
-
-
-
-            </Grid>
-
-        </div>
-    )
-}
-
-// , {
-//     method: state.method,
-//         headers: state.headers,
-//         body: JSON.stringify(state.body)
-// }
-/*
- Textarea-based parts:
-
- let textArea = useRef(null);
- useEffect(() => {
- if (!textArea.current) return;
- textArea.current.style.width = Math.min(window.innerWidth, textArea.current.scrollWidth + 10) + 'px';
- textArea.current.style.height = Math.min(window.innerHeight, textArea.current.scrollHeight + 10) + 'px';
- });
-
- {state.json && <textarea ref={textArea} value={JSON.stringify(state.json, null, '  ')} disabled={true} onChange={() => {console.log('texatrea change')}}/>}
- textarea {
- white-space: pre;
- overflow-wrap: normal;
- }
- */
 
 function App() {
     const [count, setCount] = useState(1);
+    const [state, setState] = useState([]);
+
+
+    function RemoteJSONViewer(props){
+        const key = props.index;
+
+        if (!state[key]) {
+            state[key] = {};
+        }
+
+        const onChange = (attr, event) => {
+            const value = event.target.value;
+
+            state[key][attr] = value;
+            setState(state);
+        };
+
+
+        const formId = `${key}-call`;
+        const generateTitle = `${key + 1}`;
+
+        // USE THIS FOR TEST - https://api.carbonintensity.org.uk/intensity
+
+        // USE THIS ALSO - https://aws.random.cat/meow
+        
+        const updateForm = (state) => {
+            let formDiv = document.getElementById(formId);
+            let curState = state[key]
+            //
+            // console.log("UPDATINGFORM")
+            // console.log(curState)
+
+            const titleName = curState.name || "";
+
+            formDiv.children[0].innerText = `${generateTitle}. ${titleName}`;
+        };
+
+
+        return (
+            <div id={formId} style={mainStyle.innerModule}>
+                <h3> {generateTitle} </h3>
+                <Grid container spacing={3}>
+                    <form style={mainStyle.form} onSubmit={e => e.preventDefault() || fetch(state[key].url)
+                        .then(response => response.json())
+                        .then(json => {
+                            const stateCopy = JSON.parse(JSON.stringify(state));
+                            stateCopy[key] = { json, error: null };
+                            setState(stateCopy);
+                            updateForm(state)
+                        })
+                        .catch(error => setState({ ...state, error, json: null }))
+                    }>
+                        <Grid item xs={12}>
+                            <List style={mainStyle.formList} component="nav">
+                                <ListItem>
+                                    <label>Name
+                                        <Input type="text" value={state.name} onChange={onChange.bind(null, 'name')} />
+                                    </label>
+                                </ListItem>
+                                <ListItem>
+                                    <label>URL
+                                        <Input name="url" type="text" value={state.url} onChange={onChange.bind(null, 'url')} />
+                                    </label>
+                                </ListItem>
+                                <ListItem>
+                                    <label>Headers
+                                        <Input type="text" value={state.headers} onChange={onChange.bind(null, 'headers')} />
+                                    </label>
+                                </ListItem>
+                                <ListItem>
+                                    <label>Body
+                                        <Input type="text" value={state.body} onChange={onChange.bind(null, 'body')} />
+                                    </label>
+                                </ListItem>
+                            </List>
+                        </Grid>
+                        <Grid item xs={6}>
+                            <InputLabel id="call-type-select-label">Request Type</InputLabel>
+                            <Select
+                                labelId="call-type-label"
+                                id="call-type-select"
+                                value="GET"
+                                // onChange={handleChange}
+                            >
+                                <MenuItem value="GET">GET</MenuItem>
+                                <MenuItem value="POST">POST</MenuItem>
+                                <MenuItem value="PUT">PUT</MenuItem>
+                                <MenuItem value="DELETE">DELETE</MenuItem>
+
+                            </Select>
+                            <Button style={buttonStyle} type="submit" variant="outlined" color="secondary">Make Request</Button>
+                        </Grid>
+                        <br/>
+                        {state[key].json && <SyntaxHighlighter language="json" style={monokai} >{JSON.stringify(state[key].json, null, '  ')}</SyntaxHighlighter>}
+                        {state[key].error && <pre>{state[key].error.toString()}</pre>}
+                    </form>
+                </Grid>
+            </div>
+        )
+    }
+
     return (
         <React.Fragment>
             <div>
@@ -150,12 +162,12 @@ function App() {
                         <div style={mainStyle.header}>
                             <Button style={buttonStyle} onClick={() => setCount(Math.max(count - 1, 0))} variant="outlined" color="primary">Remove Last API</Button>
                             <Button style={buttonStyle} onClick={() => setCount(count + 1)} variant="outlined" color="secondary">Add New API</Button>
-                            <SaveConfig/>
+                            <SaveConfig data={state}/>
                         </div>
                     </Grid>
                     <Grid item xs={12}>
                         <div style={mainStyle.modules}>
-                            {Array(count).fill(null).map((_, i) => <RemoteJSONViewer key={i} />)}
+                            {Array(count).fill(null).map((_, i) => <RemoteJSONViewer key={i} index={i} />)}
                         </div>
                     </Grid>
                 </Grid>

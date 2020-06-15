@@ -6,14 +6,12 @@ const fs = require('fs')
 
 const buttonStyle = {
     margin: '10px'
-}
+};
 
 class saveConfig extends Component {
 
     constructor(props) {
         super(props);
-        console.log("saveConfig Constructor")
-        console.log(props)
         this.saveToLocal = this.saveToLocal.bind(this);
     }
 
@@ -25,23 +23,20 @@ class saveConfig extends Component {
         return `${year}${month}${day}`
     }
 
-    saveToLocal() {
-        console.log('Saving Locally!');
-
-        let data = {
-            "data": [
-                {
-                    "from": "2020-06-14T18:30Z",
-                    "to": "2020-06-14T19:00Z",
-                    "intensity": {
-                        "forecast": 229,
-                        "actual": 228,
-                        "index": "moderate"
-                    }
-                }
-            ]
+    parseData(data) {
+        let formattedData = [];
+        for (let key of Object.keys(data)) {
+            let apiCall = data[key];
+            let dataBody = {};
+            dataBody['name'] = "PLACEHOLDER";
+            dataBody['response'] = apiCall.json;
+            formattedData.push(dataBody)
         }
+        return formattedData
+    }
 
+    saveToLocal() {
+        const data = this.parseData(this.props.data)
         try {
             const fileData = JSON.stringify(data);
             const blob = new Blob([fileData], {type: "text/plain"});
