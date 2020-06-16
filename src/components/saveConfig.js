@@ -1,9 +1,6 @@
 import React, { Component } from 'react';
 import Button from '@material-ui/core/Button';
 
-const fs = require('fs')
-
-
 const buttonStyle = {
     margin: '10px'
 };
@@ -28,7 +25,10 @@ class saveConfig extends Component {
         for (let key of Object.keys(data)) {
             let apiCall = data[key];
             let dataBody = {};
-            dataBody['name'] = "PLACEHOLDER";
+            dataBody['name'] = apiCall.name;
+            dataBody['method'] = apiCall.method;
+            dataBody['headers'] = apiCall.headers;
+            dataBody['body'] = apiCall.body;
             dataBody['response'] = apiCall.json;
             formattedData.push(dataBody)
         }
@@ -36,7 +36,7 @@ class saveConfig extends Component {
     }
 
     saveToLocal() {
-        const data = this.parseData(this.props.data)
+        const data = this.parseData(this.props.data);
         try {
             const fileData = JSON.stringify(data);
             const blob = new Blob([fileData], {type: "text/plain"});

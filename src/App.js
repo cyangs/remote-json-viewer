@@ -6,17 +6,18 @@ import { monokai } from 'react-syntax-highlighter/dist/esm/styles/hljs';
 import 'fontsource-roboto';
 
 import Button from '@material-ui/core/Button';
-import Input from '@material-ui/core/Input';
 import Typography from '@material-ui/core/Typography';
-import Select from '@material-ui/core/Select';
-import InputLabel from '@material-ui/core/InputLabel';
 import MenuItem from '@material-ui/core/MenuItem';
-
 import List from '@material-ui/core/List';
 import ListItem from '@material-ui/core/ListItem';
-
 import Grid from '@material-ui/core/Grid';
+import Select from '@material-ui/core/Select';
+import InputLabel from '@material-ui/core/InputLabel';
+import TextField from '@material-ui/core/TextField';
+import TextareaAutosize from '@material-ui/core/TextareaAutosize';
+
 import SaveConfig from './components/saveConfig'
+import LoadConfig from './components/loadConfig'
 import { ValidateUrl } from './helpers';
 
 
@@ -31,9 +32,11 @@ const mainStyle = {
     },
     innerModule: {
         marginTop: '40px',
+        width: '90%',
         background: '#eeeeee'
     },
     form: {
+        paddingTop: '20px',
         width: '100%'
     },
     formList: {
@@ -41,17 +44,14 @@ const mainStyle = {
     }
 };
 
-
-
 const buttonStyle = {
     margin: '10px'
-}
+};
 
 
 function App() {
     const [count, setCount] = useState(1);
     const [state, setState] = useState([]);
-
 
     function RemoteJSONViewer(props){
         const key = props.index;
@@ -62,89 +62,98 @@ function App() {
 
         const onChange = (attr, event) => {
             const value = event.target.value;
-
             state[key][attr] = value;
             setState(state);
         };
 
-
-        const formId = `${key}-call`;
-        const generateTitle = `${key + 1}`;
-
         // USE THIS FOR TEST - https://api.carbonintensity.org.uk/intensity
-
         // USE THIS ALSO - https://aws.random.cat/meow
-        
-        const updateForm = (state) => {
-            let formDiv = document.getElementById(formId);
-            let curState = state[key]
-            //
-            // console.log("UPDATINGFORM")
-            // console.log(curState)
 
-            const titleName = curState.name || "";
+        // https://api-staging.booker.com/v5/auth/connect/token
+        // { Ocp-Apim-Subscription-Key: a729ab67877e4516b08843ae8b30ac36 }
 
-            formDiv.children[0].innerText = `${generateTitle}. ${titleName}`;
-        };
+        const proxyurl = "https://cors-anywhere.herokuapp.com/";
 
+        const NameField = () => (
+            <TextField fullWidth id="outlined-basic" label="Name" variant="standard" value={state[key].name} onChange={onChange.bind(null, 'name')}/>
+        );
 
         return (
-            <div id={formId} style={mainStyle.innerModule}>
-                <h3> {generateTitle} </h3>
-                <Grid container spacing={3}>
-                    <form style={mainStyle.form} onSubmit={e => e.preventDefault() || fetch(state[key].url)
+            <div style={mainStyle.innerModule}>
+                <div style={{ paddingLeft:'35px', paddingTop:'10px'}}>
+                    <h3> {key + 1}. {state[key].name} </h3>
+                </div>
+                <Grid style={{ paddingLeft:'30px' }} container spacing={3}>
+                    <form style={mainStyle.form} onSubmit={e => e.preventDefault() || fetch(proxyurl + state[key].url,
+                        {
+                            headers: { "Ocp-Apim-Subscription-Key": "a729ab67877e4516b08843ae8b30ac36" },
+                            method: state[key].method
+
+                        })
                         .then(response => response.json())
                         .then(json => {
                             const stateCopy = JSON.parse(JSON.stringify(state));
-                            stateCopy[key] = { json, error: null };
+                            stateCopy[key] = { ...stateCopy[key], json, error: null };
                             setState(stateCopy);
-                            updateForm(state)
                         })
                         .catch(error => setState({ ...state, error, json: null }))
                     }>
                         <Grid item xs={12}>
                             <List style={mainStyle.formList} component="nav">
                                 <ListItem>
-                                    <label>Name
-                                        <Input type="text" value={state.name} onChange={onChange.bind(null, 'name')} />
-                                    </label>
+                                    { state[key].name ? null : <NameField/> }
                                 </ListItem>
                                 <ListItem>
-                                    <label>URL
-                                        <Input name="url" type="text" value={state.url} onChange={onChange.bind(null, 'url')} />
-                                    </label>
+                                    <TextField fullWidth id="outlined-basic" label="URL" variant="standard" value={state[key].url} onChange={onChange.bind(null, 'url')}/>
                                 </ListItem>
                                 <ListItem>
-                                    <label>Headers
-                                        <Input type="text" value={state.headers} onChange={onChange.bind(null, 'headers')} />
-                                    </label>
+                                    <TextareaAutosize
+                                        rowsMin={3}
+                                        aria-label="maximum height"
+                                        placeholder="Headers"
+                                        fullWidth
+                                        variant="outlined"
+                                        style={{ width: '100%' }}
+                                        value={state[key].headers}
+                                        onChange={onChange.bind(null, 'headers')}
+                                    />
                                 </ListItem>
                                 <ListItem>
-                                    <label>Body
-                                        <Input type="text" value={state.body} onChange={onChange.bind(null, 'body')} />
-                                    </label>
+                                    <TextareaAutosize
+                                        rowsMin={3}
+                                        aria-label="maximum height"
+                                        placeholder="Body"
+                                        fullWidth
+                                        variant="outlined"
+                                        style={{ width: '100%' }}
+                                        value={state[key].body}
+                                        onChange={onChange.bind(null, 'body')}
+                                    />
                                 </ListItem>
                             </List>
                         </Grid>
-                        <Grid item xs={6}>
-                            <InputLabel id="call-type-select-label">Request Type</InputLabel>
+                        <Grid style={{ paddingLeft:'18px' }} item xs={12}>
+                            <InputLabel  id="call-type-select-label">Request Type</InputLabel>
                             <Select
                                 labelId="call-type-label"
                                 id="call-type-select"
-                                value="GET"
-                                // onChange={handleChange}
+                                value={state[key].method}
+                                style={{ width: '130px' }}
+                                onChange={onChange.bind(null, 'method')}
                             >
-                                <MenuItem value="GET">GET</MenuItem>
-                                <MenuItem value="POST">POST</MenuItem>
-                                <MenuItem value="PUT">PUT</MenuItem>
-                                <MenuItem value="DELETE">DELETE</MenuItem>
+                                <MenuItem value={"GET"}>GET</MenuItem>
+                                <MenuItem value={"POST"}>POST</MenuItem>
+                                <MenuItem value={"PUT"}>PUT</MenuItem>
+                                <MenuItem value={"DELETE"}>DELETE</MenuItem>
 
                             </Select>
                             <Button style={buttonStyle} type="submit" variant="outlined" color="secondary">Make Request</Button>
                         </Grid>
                         <br/>
-                        {state[key].json && <SyntaxHighlighter language="json" style={monokai} >{JSON.stringify(state[key].json, null, '  ')}</SyntaxHighlighter>}
-                        {state[key].error && <pre>{state[key].error.toString()}</pre>}
+                        <div style={{width:'95%'}} id="response">
+                            {state[key].json && <SyntaxHighlighter language="json" style={monokai} >{JSON.stringify(state[key].json, null, '  ')}</SyntaxHighlighter>}
+                            {state[key].error && <pre>{state[key].error.toString()}</pre>}
+                        </div>
                     </form>
                 </Grid>
             </div>
@@ -154,15 +163,16 @@ function App() {
     return (
         <React.Fragment>
             <div>
-                <Grid container spacing={3}>
+                <Grid container style={{ marginBottom: '-20px' }}>
                     <Grid item xs={12}>
                         <Typography style={mainStyle.header} variant="h2" component="h2">
-                            Remote Json Viewer
+                            Integration Flow Manager
                         </Typography>
                         <div style={mainStyle.header}>
                             <Button style={buttonStyle} onClick={() => setCount(Math.max(count - 1, 0))} variant="outlined" color="primary">Remove Last API</Button>
                             <Button style={buttonStyle} onClick={() => setCount(count + 1)} variant="outlined" color="secondary">Add New API</Button>
                             <SaveConfig data={state}/>
+                            <LoadConfig/>
                         </div>
                     </Grid>
                     <Grid item xs={12}>
