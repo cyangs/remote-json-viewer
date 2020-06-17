@@ -1,32 +1,39 @@
 import React, { Component } from 'react';
-import Button from '@material-ui/core/Button';
+import MenuItem from '@material-ui/core/MenuItem';
+import Select from '@material-ui/core/Select';
+import FormHelperText from '@material-ui/core/FormHelperText';
 
-const buttonStyle = {
-    margin: '10px'
-};
+
+import book_config from './book_config.json';
+
 
 class LoadConfig extends Component {
-
     constructor(props) {
         super(props);
         this.loadConfig = this.loadConfig.bind(this);
     }
 
-
-    parseData(data) {
-    }
-
     loadConfig() {
-        console.log("Load Config Here!")
+      this.props.resetState(book_config)
     }
 
     render() {
         return (
-            <Button style={buttonStyle} onClick={this.loadConfig} type="submit" variant="outlined">
-                Load API Configuration
-            </Button>
-        );
+            <div>
+                <Select
+                        labelId="config-label"
+                        id="config-select"
+                        value="Booker Flow"
+                        style={{width:"200px"}}
+                        onChange={this.loadConfig}
+                    >
+                    <MenuItem value="booker">Booker Flow</MenuItem>
+                </Select>
+                <FormHelperText>Load API Configuration</FormHelperText>
+            </div>
+        )
     }
+
 
 
 }

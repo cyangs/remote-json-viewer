@@ -29,6 +29,7 @@ class saveConfig extends Component {
             dataBody['method'] = apiCall.method;
             dataBody['headers'] = apiCall.headers;
             dataBody['body'] = apiCall.body;
+            dataBody['url'] = apiCall.url;
             dataBody['response'] = apiCall.json;
             formattedData.push(dataBody)
         }

@@ -53,6 +53,35 @@ function App() {
     const [count, setCount] = useState(1);
     const [state, setState] = useState([]);
 
+    function resetState(new_states) {
+        console.log("RESETTING STATE")
+        console.log(new_states)
+
+        setState({ ...[] });
+
+        console.log("CURRRENT STATES")
+        console.log(state)
+
+        // new_states.forEach(function (n_state) {
+        //     var stateCopy = {
+        //         method: n_state.method,
+        //         url: n_state.url,
+        //         name: n_state.name,
+        //         json: n_state.response
+        //     };
+        //     setState(stateCopy)
+        // });
+        const stateCopy = {
+            method: "CFOoFOoFOo",
+            url: "URLRULULR",
+            name: "TESWTESTSETEST",
+            json: "RESPONSE HERE"
+        };
+        setState(stateCopy)
+        console.log("AFTER")
+        console.log(state)
+    }
+
     function RemoteJSONViewer(props){
         const key = props.index;
 
@@ -78,6 +107,13 @@ function App() {
             <TextField fullWidth id="outlined-basic" label="Name" variant="standard" value={state[key].name} onChange={onChange.bind(null, 'name')}/>
         );
 
+        const headers = () => {
+            const curState = state[key];
+            // console.log("Headers")
+            // console.log(curState)
+            return { "Ocp-Apim-Subscription-Key": "a729ab67877e4516b08843ae8b30ac36" }
+        };
+
         return (
             <div style={mainStyle.innerModule}>
                 <div style={{ paddingLeft:'35px', paddingTop:'10px'}}>
@@ -86,14 +122,17 @@ function App() {
                 <Grid style={{ paddingLeft:'30px' }} container spacing={3}>
                     <form style={mainStyle.form} onSubmit={e => e.preventDefault() || fetch(proxyurl + state[key].url,
                         {
-                            headers: { "Ocp-Apim-Subscription-Key": "a729ab67877e4516b08843ae8b30ac36" },
-                            method: state[key].method
+                            headers: headers(),
+                            method: state[key].method,
+                            body: JSON.stringify(state[key].body)
 
                         })
                         .then(response => response.json())
                         .then(json => {
                             const stateCopy = JSON.parse(JSON.stringify(state));
                             stateCopy[key] = { ...stateCopy[key], json, error: null };
+                            console.log("YOLOSWAG")
+                            console.log(stateCopy)
                             setState(stateCopy);
                         })
                         .catch(error => setState({ ...state, error, json: null }))
@@ -133,7 +172,7 @@ function App() {
                             </List>
                         </Grid>
                         <Grid style={{ paddingLeft:'18px' }} item xs={12}>
-                            <InputLabel  id="call-type-select-label">Request Type</InputLabel>
+                            <InputLabel id="call-type-select-label">Request Type</InputLabel>
                             <Select
                                 labelId="call-type-label"
                                 id="call-type-select"
@@ -145,7 +184,6 @@ function App() {
                                 <MenuItem value={"POST"}>POST</MenuItem>
                                 <MenuItem value={"PUT"}>PUT</MenuItem>
                                 <MenuItem value={"DELETE"}>DELETE</MenuItem>
-
                             </Select>
                             <Button style={buttonStyle} type="submit" variant="outlined" color="secondary">Make Request</Button>
                         </Grid>
@@ -168,11 +206,11 @@ function App() {
                         <Typography style={mainStyle.header} variant="h2" component="h2">
                             Integration Flow Manager
                         </Typography>
-                        <div style={mainStyle.header}>
+                        <div class="row" style={mainStyle.header}>
                             <Button style={buttonStyle} onClick={() => setCount(Math.max(count - 1, 0))} variant="outlined" color="primary">Remove Last API</Button>
                             <Button style={buttonStyle} onClick={() => setCount(count + 1)} variant="outlined" color="secondary">Add New API</Button>
                             <SaveConfig data={state}/>
-                            <LoadConfig/>
+                            <LoadConfig resetState={resetState}/>
                         </div>
                     </Grid>
                     <Grid item xs={12}>
