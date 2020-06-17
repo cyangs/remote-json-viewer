@@ -14,7 +14,19 @@ class LoadConfig extends Component {
     }
 
     loadConfig() {
-      this.props.resetState(book_config)
+
+        const configStates = [];
+
+        book_config.forEach(function (n_state) {
+            let stateCopy = {
+                method: n_state.method,
+                url: n_state.url,
+                name: n_state.name,
+                json: n_state.response
+            };
+            configStates.push(stateCopy)
+        });
+        this.props.resetState(configStates)
     }
 
     render() {

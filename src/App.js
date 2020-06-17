@@ -53,33 +53,8 @@ function App() {
     const [count, setCount] = useState(1);
     const [state, setState] = useState([]);
 
-    function resetState(new_states) {
-        console.log("RESETTING STATE")
-        console.log(new_states)
-
-        setState({ ...[] });
-
-        console.log("CURRRENT STATES")
-        console.log(state)
-
-        // new_states.forEach(function (n_state) {
-        //     var stateCopy = {
-        //         method: n_state.method,
-        //         url: n_state.url,
-        //         name: n_state.name,
-        //         json: n_state.response
-        //     };
-        //     setState(stateCopy)
-        // });
-        const stateCopy = {
-            method: "CFOoFOoFOo",
-            url: "URLRULULR",
-            name: "TESWTESTSETEST",
-            json: "RESPONSE HERE"
-        };
-        setState(stateCopy)
-        console.log("AFTER")
-        console.log(state)
+    function resetState (newStates){
+        setState(newStates)
     }
 
     function RemoteJSONViewer(props){
@@ -90,8 +65,7 @@ function App() {
         }
 
         const onChange = (attr, event) => {
-            const value = event.target.value;
-            state[key][attr] = value;
+            state[key][attr] = event.target.value;
             setState(state);
         };
 
@@ -131,8 +105,6 @@ function App() {
                         .then(json => {
                             const stateCopy = JSON.parse(JSON.stringify(state));
                             stateCopy[key] = { ...stateCopy[key], json, error: null };
-                            console.log("YOLOSWAG")
-                            console.log(stateCopy)
                             setState(stateCopy);
                         })
                         .catch(error => setState({ ...state, error, json: null }))
@@ -200,15 +172,24 @@ function App() {
 
     return (
         <React.Fragment>
+            {/*<div className={classes.root}>*/}
+                {/*<Grid container spacing={3}>*/}
+                    {/*<Grid item xs={12}>*/}
+                        {/*<Paper className={classes.paper}>xs=12</Paper>*/}
+                    {/*</Grid>*/}
+                    {/*<Grid item xs={6}>*/}
+                        {/*<Paper className={classes.paper}>xs=6</Paper>*/}
+                    {/*</Grid>*/}
             <div>
                 <Grid container style={{ marginBottom: '-20px' }}>
                     <Grid item xs={12}>
                         <Typography style={mainStyle.header} variant="h2" component="h2">
                             Integration Flow Manager
                         </Typography>
-                        <div class="row" style={mainStyle.header}>
+                        <div className="row" style={mainStyle.header}>
                             <Button style={buttonStyle} onClick={() => setCount(Math.max(count - 1, 0))} variant="outlined" color="primary">Remove Last API</Button>
-                            <Button style={buttonStyle} onClick={() => setCount(count + 1)} variant="outlined" color="secondary">Add New API</Button>
+                            <Button style={buttonStyle} onClick={() => setCount(count + 1)} variant="outlined" color="primary">Add New API</Button>
+                            <Button style={buttonStyle} onClick={() => setState([])} variant="outlined" color="secondary">Reset All</Button>
                             <SaveConfig data={state}/>
                             <LoadConfig resetState={resetState}/>
                         </div>
