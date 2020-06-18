@@ -5,17 +5,18 @@ import json from 'react-syntax-highlighter/dist/esm/languages/hljs/json';
 import { monokai } from 'react-syntax-highlighter/dist/esm/styles/hljs';
 import 'fontsource-roboto';
 
-import Button from '@material-ui/core/Button';
-import MenuItem from '@material-ui/core/MenuItem';
-import List from '@material-ui/core/List';
-import ListItem from '@material-ui/core/ListItem';
-import Grid from '@material-ui/core/Grid';
-import Select from '@material-ui/core/Select';
-import InputLabel from '@material-ui/core/InputLabel';
-import TextField from '@material-ui/core/TextField';
-import TextareaAutosize from '@material-ui/core/TextareaAutosize';
-import Typography from '@material-ui/core/Typography';
-
+import {
+    Button,
+    MenuItem,
+    List,
+    ListItem,
+    Grid,
+    Select,
+    InputLabel,
+    TextField,
+    TextareaAutosize,
+    Typography
+} from '@material-ui/core'
 
 import LeftNav from './components/leftNav'
 import SaveConfig from './components/saveConfig'
@@ -30,10 +31,9 @@ const mainStyle = {
         margin: '40px',
     },
     modules: {
-        marginLeft: '70px',
+        marginLeft: '45px',
     },
     innerModule: {
-        marginTop: '40px',
         width: '90%',
         background: '#eeeeee'
     },
@@ -42,7 +42,7 @@ const mainStyle = {
         width: '100%'
     },
     formList: {
-        width: '500px'
+        width: '90%'
     }
 };
 
@@ -56,7 +56,7 @@ function App() {
     const [state, setState] = useState([]);
 
     function resetState (newStates){
-        setState(newStates)
+        setState(newStates);
         setCount(newStates.length)
     }
 
@@ -86,9 +86,10 @@ function App() {
 
         const headers = () => {
             const curState = state[key];
-            // console.log("Headers")
-            // console.log(curState)
-            return { "Ocp-Apim-Subscription-Key": "a729ab67877e4516b08843ae8b30ac36" }
+            console.log("Headers");
+            console.log(curState);
+            return curState
+             // { "Ocp-Apim-Subscription-Key": "a729ab67877e4516b08843ae8b30ac36" }
         };
 
         return (
@@ -128,7 +129,7 @@ function App() {
                                         fullWidth
                                         variant="outlined"
                                         style={{ width: '100%' }}
-                                        value={state[key].headers}
+                                        value={JSON.stringify(state[key].headers)}
                                         onChange={onChange.bind(null, 'headers')}
                                     />
                                 </ListItem>
@@ -140,7 +141,7 @@ function App() {
                                         fullWidth
                                         variant="outlined"
                                         style={{ width: '100%' }}
-                                        value={state[key].body}
+                                        value={JSON.stringify(state[key].body)}
                                         onChange={onChange.bind(null, 'body')}
                                     />
                                 </ListItem>
@@ -176,10 +177,10 @@ function App() {
     return (
         <React.Fragment>
             <div>
-                <div style={{display:"inline-block", width:"10%"}}>
+                <div style={{display:"inline-block", width:"15%"}}>
                     <LeftNav data={state} />
                 </div>
-                <div style={{display:"inline-block", width:"90%"}}>
+                <div style={{display:"inline-block", width:"85%"}}>
                     <Grid container style={{ marginBottom: '-20px' }}>
                         <Grid item xs={12}>
                             <Typography style={mainStyle.header} variant="h2" component="h2">

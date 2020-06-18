@@ -1,1 +1,0 @@
-[{"name":"Fancy Cat","url":"https://aws.random.cat/meow","method":"GET","response":{"file":"https://purr.objects-us-east-1.dream.io/i/78620006.jpg"}},{"name":"UK Carbon Intensity","url":"https://api.carbonintensity.org.uk/intensity","method":"GET","response":{"data":[{"from":"2020-06-17T00:30Z","to":"2020-06-17T01:00Z","intensity":{"forecast":259,"actual":264,"index":"high"}}]}}]

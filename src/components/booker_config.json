@@ -1,0 +1,90 @@
+[
+  {
+    "name": "Authentication - Get Token",
+    "headers": [
+      {
+        "key": "Ocp-Apim-Subscription-Key",
+        "value": "a729ab67877e4516b08843ae8b30ac36",
+        "type": "text"
+      },
+      {
+        "key": "Content-Type",
+        "name": "Content-Type",
+        "value": "application/x-www-form-urlencoded",
+        "type": "text",
+        "disabled": true
+      }
+    ],
+    "url": "https://api-staging.booker.com/v5/auth/connect/token",
+    "body": {
+      "mode": "urlencoded",
+      "urlencoded": [
+        {
+          "key": "grant_type",
+          "value": "client_credentials",
+          "type": "text"
+        },
+        {
+          "key": "client_id",
+          "value": "a8MxSCG4fixa",
+          "type": "text"
+        },
+        {
+          "key": "client_secret",
+          "value": "vW21xnOzalfA",
+          "type": "text"
+        },
+        {
+          "key": "scope",
+          "value": "partner-payment",
+          "type": "text"
+        },
+        {
+          "key": "scope",
+          "value": "customer",
+          "type": "text"
+        }
+      ]
+    },
+    "method": "GET",
+    "json": {
+      "file": "https://purr.objects-us-east-1.dream.io/i/78620006.jpg"
+    }
+  },
+  {
+    "name": "Customer - Get Availabilities 7D",
+    "headers": [
+      {
+        "key": "Ocp-Apim-Subscription-Key",
+        "type": "text",
+        "value": "a729ab67877e4516b08843ae8b30ac36"
+      },
+      {
+        "key": "Content-Type",
+        "name": "Content-Type",
+        "type": "text",
+        "value": "application/json"
+      },
+      {
+        "key": "Authorization",
+        "value": "Bearer {{booker_access_token}}",
+        "type": "text"
+      }
+    ],
+    "url": "https://api-staging.booker.com/v5/cacheable_availability_groupon/availability/30day/?LocationId=5234&fromDateTime=09/15/2019 00:00:00&IncludeEmployees=true",
+    "method": "GET",
+    "json": {
+      "data": [
+        {
+          "from": "2020-06-17T00:30Z",
+          "to": "2020-06-17T01:00Z",
+          "intensity": {
+            "forecast": 259,
+            "actual": 264,
+            "index": "high"
+          }
+        }
+      ]
+    }
+  }
+]

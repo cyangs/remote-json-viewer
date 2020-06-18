@@ -4,7 +4,7 @@ import Select from '@material-ui/core/Select';
 import FormHelperText from '@material-ui/core/FormHelperText';
 
 
-import book_config from './book_config.json';
+import booker_config from './booker_config.json';
 
 
 class LoadConfig extends Component {
@@ -14,22 +14,7 @@ class LoadConfig extends Component {
     }
 
     loadConfig() {
-
-        /*const configStates = [];
-
-        book_config.forEach(function (n_state) {
-            let stateCopy = {
-                method: n_state.method,
-                url: n_state.url,
-                name: n_state.name,
-                json: n_state.response
-            };
-            configStates.push(stateCopy)
-        });*/
-
-        const configStates = JSON.parse(JSON.stringify(book_config));
-        console.log({ configStates })
-
+        const configStates = JSON.parse(JSON.stringify(booker_config));
         this.props.resetState(configStates)
     }
 
