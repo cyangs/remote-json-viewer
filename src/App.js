@@ -6,7 +6,6 @@ import { monokai } from 'react-syntax-highlighter/dist/esm/styles/hljs';
 import 'fontsource-roboto';
 
 import Button from '@material-ui/core/Button';
-import Typography from '@material-ui/core/Typography';
 import MenuItem from '@material-ui/core/MenuItem';
 import List from '@material-ui/core/List';
 import ListItem from '@material-ui/core/ListItem';
@@ -15,7 +14,10 @@ import Select from '@material-ui/core/Select';
 import InputLabel from '@material-ui/core/InputLabel';
 import TextField from '@material-ui/core/TextField';
 import TextareaAutosize from '@material-ui/core/TextareaAutosize';
+import Typography from '@material-ui/core/Typography';
 
+
+import LeftNav from './components/leftNav'
 import SaveConfig from './components/saveConfig'
 import LoadConfig from './components/loadConfig'
 import { ValidateUrl } from './helpers';
@@ -55,6 +57,7 @@ function App() {
 
     function resetState (newStates){
         setState(newStates)
+        setCount(newStates.length)
     }
 
     function RemoteJSONViewer(props){
@@ -172,34 +175,31 @@ function App() {
 
     return (
         <React.Fragment>
-            {/*<div className={classes.root}>*/}
-                {/*<Grid container spacing={3}>*/}
-                    {/*<Grid item xs={12}>*/}
-                        {/*<Paper className={classes.paper}>xs=12</Paper>*/}
-                    {/*</Grid>*/}
-                    {/*<Grid item xs={6}>*/}
-                        {/*<Paper className={classes.paper}>xs=6</Paper>*/}
-                    {/*</Grid>*/}
             <div>
-                <Grid container style={{ marginBottom: '-20px' }}>
-                    <Grid item xs={12}>
-                        <Typography style={mainStyle.header} variant="h2" component="h2">
-                            Integration Flow Manager
-                        </Typography>
-                        <div className="row" style={mainStyle.header}>
-                            <Button style={buttonStyle} onClick={() => setCount(Math.max(count - 1, 0))} variant="outlined" color="primary">Remove Last API</Button>
-                            <Button style={buttonStyle} onClick={() => setCount(count + 1)} variant="outlined" color="primary">Add New API</Button>
-                            <Button style={buttonStyle} onClick={() => setState([])} variant="outlined" color="secondary">Reset All</Button>
-                            <SaveConfig data={state}/>
-                            <LoadConfig resetState={resetState}/>
-                        </div>
+                <div style={{display:"inline-block", width:"10%"}}>
+                    <LeftNav data={state} />
+                </div>
+                <div style={{display:"inline-block", width:"90%"}}>
+                    <Grid container style={{ marginBottom: '-20px' }}>
+                        <Grid item xs={12}>
+                            <Typography style={mainStyle.header} variant="h2" component="h2">
+                                Integration Flow Manager
+                            </Typography>
+                            <div className="row" style={mainStyle.header}>
+                                <Button style={buttonStyle} onClick={() => setCount(Math.max(count - 1, 0))} variant="outlined" color="primary">Remove Last API</Button>
+                                <Button style={buttonStyle} onClick={() => setCount(count + 1)} variant="outlined" color="primary">Add New API</Button>
+                                <Button style={buttonStyle} onClick={() => setState([])} variant="outlined" color="secondary">Reset All</Button>
+                                <SaveConfig data={state}/>
+                                <LoadConfig resetState={resetState}/>
+                            </div>
+                        </Grid>
+                        <Grid item xs={12}>
+                            <div style={mainStyle.modules}>
+                                {Array(count).fill(null).map((_, i) => <RemoteJSONViewer key={i} index={i} />)}
+                            </div>
+                        </Grid>
                     </Grid>
-                    <Grid item xs={12}>
-                        <div style={mainStyle.modules}>
-                            {Array(count).fill(null).map((_, i) => <RemoteJSONViewer key={i} index={i} />)}
-                        </div>
-                    </Grid>
-                </Grid>
+                </div>
             </div>
         </React.Fragment>
 

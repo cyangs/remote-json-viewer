@@ -15,7 +15,7 @@ class LoadConfig extends Component {
 
     loadConfig() {
 
-        const configStates = [];
+        /*const configStates = [];
 
         book_config.forEach(function (n_state) {
             let stateCopy = {
@@ -25,7 +25,11 @@ class LoadConfig extends Component {
                 json: n_state.response
             };
             configStates.push(stateCopy)
-        });
+        });*/
+
+        const configStates = JSON.parse(JSON.stringify(book_config));
+        console.log({ configStates })
+
         this.props.resetState(configStates)
     }
 
