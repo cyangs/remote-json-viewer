@@ -54,10 +54,18 @@ const buttonStyle = {
 function App() {
     const [count, setCount] = useState(1);
     const [state, setState] = useState([]);
+    const [config, setConfig] = useState(false);
 
-    function resetState (newStates){
+    function usePresavedConfig(newStates) {
         setState(newStates);
-        setCount(newStates.length)
+        setCount(newStates.length);
+        setConfig(true);
+    }
+
+    function resetState() {
+        setState([]);
+        setCount(1);
+        setConfig(false);
     }
 
     function RemoteJSONViewer(props){
@@ -84,13 +92,45 @@ function App() {
             <TextField fullWidth id="outlined-basic" label="Name" variant="standard" value={state[key].name} onChange={onChange.bind(null, 'name')}/>
         );
 
-        const headers = () => {
-            const curState = state[key];
-            console.log("Headers");
-            console.log(curState);
-            return curState
-             // { "Ocp-Apim-Subscription-Key": "a729ab67877e4516b08843ae8b30ac36" }
-        };
+        const EntryHeaders = () => (
+            <TextareaAutosize
+                rowsMin={3}
+                aria-label="maximum height"
+                placeholder="Headers"
+                fullWidth
+                variant="outlined"
+                style={{ width: '100%' }}
+                value={JSON.stringify(state[key].headers)}
+                onChange={onChange.bind(null, 'headers')}
+            />
+
+        );
+
+        const ConfigHeaders = () => (
+            <div style={{ width:"100%" }}>
+                <SyntaxHighlighter language="json" style={monokai} customStyle={{width:"100%"}} >{JSON.stringify(state[key].headers, null, '  ')}</SyntaxHighlighter>
+            </div>
+        );
+
+        const EntryBody = () => (
+            <TextareaAutosize
+                rowsMin={3}
+                aria-label="maximum height"
+                placeholder="Body"
+                fullWidth
+                variant="outlined"
+                style={{ width: '100%' }}
+                value={JSON.stringify(state[key].body)}
+                onChange={onChange.bind(null, 'body')}
+            />
+        );
+
+        const ConfigBody = () => (
+            <div style={{ width:"100%" }}>
+                Request Body
+                <SyntaxHighlighter language="json" style={monokai} customStyle={{width:"100%"}} >{JSON.stringify(state[key].body, null, '  ')}</SyntaxHighlighter>
+            </div>
+        );
 
         return (
             <div style={mainStyle.innerModule}>
@@ -100,7 +140,7 @@ function App() {
                 <Grid style={{ paddingLeft:'30px' }} container spacing={3}>
                     <form style={mainStyle.form} onSubmit={e => e.preventDefault() || fetch(proxyurl + state[key].url,
                         {
-                            headers: headers(),
+                            headers: state[key].headers,
                             method: state[key].method,
                             body: JSON.stringify(state[key].body)
 
@@ -122,28 +162,10 @@ function App() {
                                     <TextField fullWidth id="outlined-basic" label="URL" variant="standard" value={state[key].url} onChange={onChange.bind(null, 'url')}/>
                                 </ListItem>
                                 <ListItem>
-                                    <TextareaAutosize
-                                        rowsMin={3}
-                                        aria-label="maximum height"
-                                        placeholder="Headers"
-                                        fullWidth
-                                        variant="outlined"
-                                        style={{ width: '100%' }}
-                                        value={JSON.stringify(state[key].headers)}
-                                        onChange={onChange.bind(null, 'headers')}
-                                    />
+                                    { !config ? <EntryHeaders/> : <ConfigHeaders/> }
                                 </ListItem>
                                 <ListItem>
-                                    <TextareaAutosize
-                                        rowsMin={3}
-                                        aria-label="maximum height"
-                                        placeholder="Body"
-                                        fullWidth
-                                        variant="outlined"
-                                        style={{ width: '100%' }}
-                                        value={JSON.stringify(state[key].body)}
-                                        onChange={onChange.bind(null, 'body')}
-                                    />
+                                    { !config ? <EntryBody/> : <ConfigBody/> }
                                 </ListItem>
                             </List>
                         </Grid>
@@ -164,8 +186,8 @@ function App() {
                             <Button style={buttonStyle} type="submit" variant="outlined" color="secondary">Make Request</Button>
                         </Grid>
                         <br/>
-                        <div style={{width:'95%'}} id="response">
-                            {state[key].json && <SyntaxHighlighter language="json" style={monokai} >{JSON.stringify(state[key].json, null, '  ')}</SyntaxHighlighter>}
+                        <div style={{width:'89%'}} id="response">
+                            {state[key].json && <SyntaxHighlighter language="json" style={monokai} customStyle={{width:"100%"}} >{JSON.stringify(state[key].json, null, '  ')}</SyntaxHighlighter>}
                             {state[key].error && <pre>{state[key].error.toString()}</pre>}
                         </div>
                     </form>
@@ -173,6 +195,7 @@ function App() {
             </div>
         )
     }
+
 
     return (
         <React.Fragment>
@@ -189,9 +212,9 @@ function App() {
                             <div className="row" style={mainStyle.header}>
                                 <Button style={buttonStyle} onClick={() => setCount(Math.max(count - 1, 0))} variant="outlined" color="primary">Remove Last API</Button>
                                 <Button style={buttonStyle} onClick={() => setCount(count + 1)} variant="outlined" color="primary">Add New API</Button>
-                                <Button style={buttonStyle} onClick={() => setState([])} variant="outlined" color="secondary">Reset All</Button>
+                                <Button style={buttonStyle} onClick={() => resetState()} variant="outlined" color="secondary">Reset All</Button>
                                 <SaveConfig data={state}/>
-                                <LoadConfig resetState={resetState}/>
+                                <LoadConfig usePresavedConfig={usePresavedConfig}/>
                             </div>
                         </Grid>
                         <Grid item xs={12}>

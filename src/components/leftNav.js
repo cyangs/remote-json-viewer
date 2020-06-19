@@ -57,9 +57,6 @@ function a11yProps(index) {
 }
 
 export default function LeftNav({data}) {
-    console.log("LEFT HAND NAV")
-    console.log(data)
-
     const [value, setValue] = useState(0);
 
     const handleChange = (event, newValue) => {

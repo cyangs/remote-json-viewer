@@ -15,7 +15,7 @@ class LoadConfig extends Component {
 
     loadConfig() {
         const configStates = JSON.parse(JSON.stringify(booker_config));
-        this.props.resetState(configStates)
+        this.props.usePresavedConfig(configStates)
     }
 
     render() {

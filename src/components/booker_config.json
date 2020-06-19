@@ -72,6 +72,7 @@
       }
     ],
     "url": "https://api-staging.booker.com/v5/cacheable_availability_groupon/availability/30day/?LocationId=5234&fromDateTime=09/15/2019 00:00:00&IncludeEmployees=true",
+    "body": {},
     "method": "GET",
     "json": {
       "data": [
